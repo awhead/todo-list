@@ -7,7 +7,21 @@
     </title>
 
 </head>
+<!-- 
+    새로운 TODO
+    input text
+        id : inputNewTodo
+    
+    input button
+        id : buttonNewTodo
+    
+    tbody
+        id : tbodyNewTodo
 
+
+
+
+ -->
 <body>
     <div style="text-align:center; margin:auto; width : 80%">
         <h2>TODO List</h2>
@@ -19,35 +33,64 @@
             <thead>
                 <th style="
                     border-bottom:1px solid #444444; 
-                    width:10px;padding : 7px;">
+                    width:55px;padding : 7px;">
                     TODO:
                 </th>
                 <th style="border-bottom:1px solid #444444;">
                     <input type="text" id="inputNewTodo" style=" width:100%">
                 </th>
                 <th style="border-bottom:1px solid #444444;width:55px; padding-left:5px;">
-                    <input type="button" id = "buttonNewTodo" onclick="getTodo()" value="+New" style="text-align:left;width:45px;padding-left:2px;">
+                    <input type="button" id = "buttonNewTodo" onclick="getTodo()" value="+New" style="text-align:left;width:50px;padding-left:2px;">
                 </th>
             </thead>
             <tbody id="tbodyNewTodo">
 
             </tbody>
         </table>
+        <br>
+        <table style="
+            border:2px solid  #444444; 
+            border-collapse:collapse; 
+            width:100%; margin:auto; 
+            text-align:left;">
+            <thead>
+                <th style="
+                    border-bottom:1px solid #444444; 
+                    padding : 7px;"
+                    colspan="2">
+                    TODO: &nbsp;Done
+                </th>
+                <th style="border-bottom:1px solid #444444;width:55px; padding-left:5px;">
+                    <input type="button" id = "buttonDoneTodo" onclick="removeTodo()" value="-Delete" style="text-align:left;width:50px;padding-left:2px;">
+                </th>
+            </thead>
+            <tbody id="tbodyDoneTodo">
+            </tbody>
+        </table>
     </div>
     <script lang="javascript">
+        var arrToDo = new Array();
         function getTodo() {
-            var newTr = document.createElement("tr")
-            var newTdChk = document.createElement("td");
-            // newTdChk.setAttribute("style", "width:1px; border:1px solid  #444444")
+            var newTr = document.createElement("tr");
             var newChk = document.createElement("input");
+
+            var newTdChk = document.createElement("td");            
             var newTdText = document.createElement("td");
-            var inputValue = document.getElementById("inputNewTodo").value;
+
+            var inputValue = document.getElementById("inputNewTodo").value;                        
             var newContent = document.createTextNode(inputValue);
 
-            newChk.setAttribute("type", "checkbox")
-            newTdText.setAttribute("colspan", "2")
+            var index = arrToDo.length;
+            arrToDo[index]=inputValue;
 
-            newTdChk.appendChild(newChk)
+            newChk.setAttribute("type", "checkbox");
+            newChk.setAttribute("onclick", "moveTodo(this)");
+            newChk.setAttribute("id",index);
+            newTdChk.setAttribute("style","padding:5px; text-align:center;");
+            newTdText.setAttribute("colspan", "2");
+            
+            
+            newTdChk.appendChild(newChk);
             newTdText.appendChild(newContent);
 
             newTr.appendChild(newTdChk);
@@ -55,6 +98,33 @@
 
             document.getElementById("tbodyNewTodo").appendChild(newTr);
 
+        }
+        function moveTodo(newChk){
+            var index=newChk.id;            
+
+            var doneTr = document.createElement("tr");
+            var doneChk = document.createElement("input");
+
+            var doneTdChk = document.createElement("td");            
+            var doneTdText = document.createElement("td");
+
+            var inputValue = arrToDo[index];
+            var doneContent = document.createTextNode(inputValue);
+            
+            doneChk.setAttribute("type", "checkbox");            
+            doneChk.setAttribute("id",index);
+            doneChk.setAttribute("checked","checked");
+            doneTdChk.setAttribute("style","padding:5px; text-align:center;width:55px");
+            doneTdText.setAttribute("colspan", "2");
+            doneTdText.setAttribute("style","text-decoration: line-through")
+            
+            doneTdChk.appendChild(doneChk);
+            doneTdText.appendChild(doneContent);
+
+            doneTr.appendChild(doneTdChk);
+            doneTr.appendChild(doneTdText);
+
+            document.getElementById("tbodyDoneTodo").appendChild(doneTr);            
         }        
     </script>
 
