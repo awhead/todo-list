@@ -72,10 +72,8 @@
         var arrToDo = new Array();
         function getTodo() {
             var newTr = document.createElement("tr");
+            var newTd = document.createElement("td");
             var newChk = document.createElement("input");
-
-            var newTdChk = document.createElement("td");            
-            var newTdText = document.createElement("td");
 
             var inputValue = document.getElementById("inputNewTodo").value;                        
             var newContent = document.createTextNode(inputValue);
@@ -85,46 +83,46 @@
 
             newChk.setAttribute("type", "checkbox");
             newChk.setAttribute("onclick", "moveTodo(this)");
-            newChk.setAttribute("id",index);
-            newTdChk.setAttribute("style","padding:5px; text-align:center;");
-            newTdText.setAttribute("colspan", "2");
-            
-            
-            newTdChk.appendChild(newChk);
-            newTdText.appendChild(newContent);
 
-            newTr.appendChild(newTdChk);
-            newTr.appendChild(newTdText);
+            newTr.setAttribute("name",index);
+            newChk.setAttribute("name",index);
+
+            newChk.setAttribute("style","margin-left:30px;margin-right:30px;vertical-align:middle")
+            newTd.setAttribute("colspan", "3");
+            
+            
+            newTd.appendChild(newChk);
+            newTd.appendChild(newContent);
+
+            newTr.appendChild(newTd);
 
             document.getElementById("tbodyNewTodo").appendChild(newTr);
 
         }
         function moveTodo(newChk){
-            var index=newChk.id;            
+            var index=newChk.name;            
 
             var doneTr = document.createElement("tr");
+            var doneTd = document.createElement("td");
+
             var doneChk = document.createElement("input");
-
-            var doneTdChk = document.createElement("td");            
-            var doneTdText = document.createElement("td");
-
             var inputValue = arrToDo[index];
             var doneContent = document.createTextNode(inputValue);
             
+            document.getElementById("tbodyNewTodo").removeChild(document.getElementsByName(index)[0]);
             doneChk.setAttribute("type", "checkbox");            
             doneChk.setAttribute("id",index);
+            doneChk.setAttribute("style","margin-left:30px;margin-right:30px;vertical-align:middle")
             doneChk.setAttribute("checked","checked");
-            doneTdChk.setAttribute("style","padding:5px; text-align:center;width:55px");
-            doneTdText.setAttribute("colspan", "2");
-            doneTdText.setAttribute("style","text-decoration: line-through")
+            doneTd.setAttribute("colspan", "3");
+            doneTd.setAttribute("style","text-decoration: line-through")
             
-            doneTdChk.appendChild(doneChk);
-            doneTdText.appendChild(doneContent);
+            doneTd.appendChild(doneChk);
+            doneTd.appendChild(doneContent);
+            
+            doneTr.appendChild(doneTd);
 
-            doneTr.appendChild(doneTdChk);
-            doneTr.appendChild(doneTdText);
-
-            document.getElementById("tbodyDoneTodo").appendChild(doneTr);            
+            document.getElementById("tbodyDoneTodo").appendChild(doneTr); 
         }        
     </script>
 
