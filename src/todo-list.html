@@ -40,7 +40,7 @@
                     <input type="text" id="inputNewTodo" style=" width:100%">
                 </th>
                 <th style="border-bottom:1px solid #444444;width:55px; padding-left:5px;">
-                    <input type="button" id = "buttonNewTodo" onclick="getTodo()" value="+New" style="text-align:left;width:50px;padding-left:2px;">
+                    <input type="button" id = "buttonNewTodo" onclick="generateTodo()" value="+New" style="text-align:left;width:50px;padding-left:2px;">
                 </th>
             </thead>
             <tbody id="tbodyNewTodo">
@@ -70,54 +70,70 @@
     </div>
     <script lang="javascript">
         var arrToDo = new Array();
-        function getTodo() {
+        function generateTodo(doneTodo) {
             var newTr = document.createElement("tr");
             var newTd = document.createElement("td");
-            var newChk = document.createElement("input");
+            var newCheckbox = document.createElement("input");
+            var index;
+            var inputValue;
+            if(doneTodo==null){
+                inputValue = document.getElementById("inputNewTodo").value;                        
+                index=arrToDo.length;
+                arrToDo[index]=inputValue;
 
-            var inputValue = document.getElementById("inputNewTodo").value;                        
+                console.log(doneTodo);
+                console.log(arguments);
+
+            }else{
+                // index=this.
+                index=doneTodo.name;
+                inputValue=arrToDo[index];
+                document.getElementById("tbodyDoneTodo").removeChild(document.getElementsByName(index)[0]);
+
+            }
+
+
             var newContent = document.createTextNode(inputValue);
 
-            var index = arrToDo.length;
-            arrToDo[index]=inputValue;
 
-            newChk.setAttribute("type", "checkbox");
-            newChk.setAttribute("onclick", "moveTodo(this)");
+            newCheckbox.setAttribute("type", "checkbox");
+            newCheckbox.setAttribute("onclick", "moveTodo(this)");
 
             newTr.setAttribute("name",index);
-            newChk.setAttribute("name",index);
+            newCheckbox.setAttribute("name",index);
 
-            newChk.setAttribute("style","margin-left:30px;margin-right:30px;vertical-align:middle")
+            newCheckbox.setAttribute("style","margin-left:30px;margin-right:30px;vertical-align:middle")
             newTd.setAttribute("colspan", "3");
             
             
-            newTd.appendChild(newChk);
+            newTd.appendChild(newCheckbox);
             newTd.appendChild(newContent);
 
             newTr.appendChild(newTd);
 
             document.getElementById("tbodyNewTodo").appendChild(newTr);
-
         }
-        function moveTodo(newChk){
-            var index=newChk.name;            
+        function moveTodo(newCheckbox){
+            var index=newCheckbox.name;            
 
             var doneTr = document.createElement("tr");
             var doneTd = document.createElement("td");
 
-            var doneChk = document.createElement("input");
+            var doneCheckbox = document.createElement("input");
             var inputValue = arrToDo[index];
             var doneContent = document.createTextNode(inputValue);
             
             document.getElementById("tbodyNewTodo").removeChild(document.getElementsByName(index)[0]);
-            doneChk.setAttribute("type", "checkbox");            
-            doneChk.setAttribute("id",index);
-            doneChk.setAttribute("style","margin-left:30px;margin-right:30px;vertical-align:middle")
-            doneChk.setAttribute("checked","checked");
+            doneCheckbox.setAttribute("type", "checkbox");   
+            doneCheckbox.setAttribute("onclick", "generateTodo(this)");         
+            doneTr.setAttribute("name",index);
+            doneCheckbox.setAttribute("name",index);
+            doneCheckbox.setAttribute("style","margin-left:30px;margin-right:30px;vertical-align:middle")
+            doneCheckbox.setAttribute("checked","checked");
             doneTd.setAttribute("colspan", "3");
             doneTd.setAttribute("style","text-decoration: line-through")
             
-            doneTd.appendChild(doneChk);
+            doneTd.appendChild(doneCheckbox);
             doneTd.appendChild(doneContent);
             
             doneTr.appendChild(doneTd);
