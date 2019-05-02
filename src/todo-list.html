@@ -5,42 +5,21 @@
     <title>
         TODO-list
     </title>
-
+    <link rel="stylesheet" href="todo-list.css">
 </head>
-<!-- 
-    새로운 TODO
-    input text
-        id : inputNewTodo
-    
-    input button
-        id : buttonNewTodo
-    
-    tbody
-        id : tbodyNewTodo
-
-
-
-
- -->
 <body>
     <div style="text-align:center; margin:auto; width : 80%">
         <h2>TODO List</h2>
-        <table style="
-            border:2px solid  #444444; 
-            border-collapse:collapse; 
-            width:100%; margin:auto; 
-            text-align:left;">
+        <table>
             <thead>
-                <th style="
-                    border-bottom:1px solid #444444; 
-                    width:55px;padding : 7px;">
+                <th class="text">
                     TODO:
                 </th>
-                <th style="border-bottom:1px solid #444444;">
-                    <input type="text" id="inputNewTodo" style=" width:100%">
+                <th>
+                    <input type="text" id="inputNewTodo">
                 </th>
-                <th style="border-bottom:1px solid #444444;width:55px; padding-left:5px;">
-                    <input type="button" id = "buttonNewTodo" onclick="generateTodo()" value="+New" style="text-align:center;width:50px;">
+                <th class="button">
+                    <input type="button" id="buttonNewTodo" onclick="generateTodo()" value="+New">
                 </th>
             </thead>
             <tbody id="tbodyNewTodo">
@@ -48,20 +27,13 @@
             </tbody>
         </table>
         <br>
-        <table style="
-            border:2px solid  #444444; 
-            border-collapse:collapse; 
-            width:100%; margin:auto; 
-            text-align:left;">
+        <table>
             <thead>
-                <th style="
-                    border-bottom:1px solid #444444; 
-                    padding : 7px;"
-                    colspan="2">
+                <th class="text" colspan="2">
                     TODO: &nbsp;Done
                 </th>
-                <th style="border-bottom:1px solid #444444;width:55px; padding-left:5px;">
-                    <input type="button" id = "buttonDoneTodo" onclick="removeTodo()" value="Clear" style="text-align:center;width:50px;">
+                <th class="button">
+                    <input type="button" id="buttonDoneTodo" onclick="removeTodo()" value="Clear">
                 </th>
             </thead>
             <tbody id="tbodyDoneTodo">
@@ -76,31 +48,27 @@
             var newCheckbox = document.createElement("input");
             var index;
             var inputValue;
-            if(doneTodo==null){
-                inputValue = document.getElementById("inputNewTodo").value;                        
-                index=arrToDo.length;
-                arrToDo[index]=inputValue;
-                document.getElementById("inputNewTodo").value="";
-            }else{
-                index=doneTodo.name;
-                inputValue=arrToDo[index];
+            if (doneTodo == null) {
+                inputValue = document.getElementById("inputNewTodo").value;
+                index = arrToDo.length;
+                arrToDo[index] = inputValue;
+                document.getElementById("inputNewTodo").value = "";
+                // document.getElementById("inputNewTodo").setAttribute("value",null);
+            } else {
+                index = doneTodo.name;
+                inputValue = arrToDo[index];
                 document.getElementById("tbodyDoneTodo").removeChild(document.getElementsByName(index)[0]);
             }
-
-
             var newContent = document.createTextNode(inputValue);
-
 
             newCheckbox.setAttribute("type", "checkbox");
             newCheckbox.setAttribute("onclick", "moveTodo(this)");
 
-            newTr.setAttribute("name",index);
-            newCheckbox.setAttribute("name",index);
+            newTr.setAttribute("name", index);
+            newCheckbox.setAttribute("name", index);
 
-            newCheckbox.setAttribute("style","margin-left:30px;margin-right:30px;vertical-align:middle")
             newTd.setAttribute("colspan", "3");
-            
-            
+
             newTd.appendChild(newCheckbox);
             newTd.appendChild(newContent);
 
@@ -108,8 +76,8 @@
 
             document.getElementById("tbodyNewTodo").appendChild(newTr);
         }
-        function moveTodo(newCheckbox){
-            var index=newCheckbox.name;            
+        function moveTodo(newCheckbox) {
+            var index = newCheckbox.name;
 
             var doneTr = document.createElement("tr");
             var doneTd = document.createElement("td");
@@ -117,45 +85,39 @@
             var doneCheckbox = document.createElement("input");
             var inputValue = arrToDo[index];
             var doneContent = document.createTextNode(inputValue);
-            
+
             document.getElementById("tbodyNewTodo").removeChild(document.getElementsByName(index)[0]);
-            doneCheckbox.setAttribute("type", "checkbox");   
-            doneCheckbox.setAttribute("onclick", "generateTodo(this)");         
-            doneTr.setAttribute("name",index);
-            doneCheckbox.setAttribute("name",index);
-            doneCheckbox.setAttribute("style","margin-left:30px;margin-right:30px;vertical-align:middle")
-            doneCheckbox.setAttribute("checked","checked");
+            doneCheckbox.setAttribute("type", "checkbox");
+            doneCheckbox.setAttribute("onclick", "generateTodo(this)");
+
+            doneTr.setAttribute("name", index);
+            doneCheckbox.setAttribute("name", index);
+
+            doneCheckbox.setAttribute("checked", "checked");
             doneTd.setAttribute("colspan", "3");
-            doneTd.setAttribute("style","text-decoration: line-through")
-            
+            doneTd.setAttribute("class", "checked")
+
             doneTd.appendChild(doneCheckbox);
             doneTd.appendChild(doneContent);
-            
+
             doneTr.appendChild(doneTd);
 
-            document.getElementById("tbodyDoneTodo").appendChild(doneTr); 
-        }       
-        function removeTodo(){
-            
-            if(document.getElementById("tbodyDoneTodo").hasChildNodes()){
-                var length=document.getElementById("tbodyDoneTodo").children.length;
+            document.getElementById("tbodyDoneTodo").appendChild(doneTr);
+        }
+        function removeTodo() {
+            if (document.getElementById("tbodyDoneTodo").hasChildNodes()) {
+                var length = document.getElementById("tbodyDoneTodo").children.length;
                 var x = document.getElementById("tbodyDoneTodo");
-                for(var i = 0 ; i < length; i++){                    
+                for (var i = 0; i < length; i++) {
                     var index = x.lastChild.getAttribute("name");
                     console.log(arrToDo[index]);
                     delete arrToDo[index];
                     console.log(arrToDo[index]);
                     x.lastChild.remove();
-                    
                 }
             }
-            
-
-
         } 
     </script>
-
-
 </body>
 
 </html>
