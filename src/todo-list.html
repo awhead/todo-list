@@ -40,7 +40,7 @@
                     <input type="text" id="inputNewTodo" style=" width:100%">
                 </th>
                 <th style="border-bottom:1px solid #444444;width:55px; padding-left:5px;">
-                    <input type="button" id = "buttonNewTodo" onclick="generateTodo()" value="+New" style="text-align:left;width:50px;padding-left:2px;">
+                    <input type="button" id = "buttonNewTodo" onclick="generateTodo()" value="+New" style="text-align:center;width:50px;">
                 </th>
             </thead>
             <tbody id="tbodyNewTodo">
@@ -61,7 +61,7 @@
                     TODO: &nbsp;Done
                 </th>
                 <th style="border-bottom:1px solid #444444;width:55px; padding-left:5px;">
-                    <input type="button" id = "buttonDoneTodo" onclick="removeTodo()" value="-Delete" style="text-align:left;width:50px;padding-left:2px;">
+                    <input type="button" id = "buttonDoneTodo" onclick="removeTodo()" value="Clear" style="text-align:center;width:50px;">
                 </th>
             </thead>
             <tbody id="tbodyDoneTodo">
@@ -80,10 +80,6 @@
                 inputValue = document.getElementById("inputNewTodo").value;                        
                 index=arrToDo.length;
                 arrToDo[index]=inputValue;
-
-                console.log(doneTodo);
-                console.log(arguments);
-
             }else{
                 // index=this.
                 index=doneTodo.name;
@@ -139,7 +135,25 @@
             doneTr.appendChild(doneTd);
 
             document.getElementById("tbodyDoneTodo").appendChild(doneTr); 
-        }        
+        }       
+        function removeTodo(){
+            
+            if(document.getElementById("tbodyDoneTodo").hasChildNodes()){
+                var length=document.getElementById("tbodyDoneTodo").children.length;
+                var x = document.getElementById("tbodyDoneTodo");
+                for(var i = 0 ; i < length; i++){                    
+                    var index = x.lastChild.getAttribute("name");
+                    console.log(arrToDo[index]);
+                    delete arrToDo[index];
+                    console.log(arrToDo[index]);
+                    x.lastChild.remove();
+                    
+                }
+            }
+            
+
+
+        } 
     </script>
 
 
