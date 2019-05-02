@@ -80,12 +80,11 @@
                 inputValue = document.getElementById("inputNewTodo").value;                        
                 index=arrToDo.length;
                 arrToDo[index]=inputValue;
+                document.getElementById("inputNewTodo").value="";
             }else{
-                // index=this.
                 index=doneTodo.name;
                 inputValue=arrToDo[index];
                 document.getElementById("tbodyDoneTodo").removeChild(document.getElementsByName(index)[0]);
-
             }
 
 
