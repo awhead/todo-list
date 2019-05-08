@@ -7,16 +7,21 @@
     </title>
     <link rel="stylesheet" href="todo-list.css">
 </head>
+
 <body>
     <div style="text-align:center; margin:auto; width : 80%">
         <h2>TODO List</h2>
+        <form style="text-align: right; margin-right:9px">
+            <input type="button" id="buttonSave" value="Save" onclick="saveRearrangedTodo()">
+        </form>
+        <br>
         <table>
             <thead>
                 <th class="text">
                     TODO:
                 </th>
                 <th>
-                    <input type="text" id="inputNewTodo">
+                    <input type="text" id="inputNewTodo" onkeydown="keyDownEnter()">
                 </th>
                 <th class="button">
                     <input type="button" id="buttonNewTodo" onclick="generateTodo()" value="+New">
@@ -42,6 +47,56 @@
     </div>
     <script lang="javascript">
         var arrToDo = new Array();
+        loadArrToDo();
+        for(var i = 0 ; i < generateTodo.length; i++){
+            document.getElementById("inputNewTodo").value=arrToDo[i];
+            generateTodo();
+        }
+        function saveRearrangedTodo() {
+            localStorage.clear();
+            rearrangeArrToDo()
+            saveArrToDo();
+        }
+        function rearrangeArrToDo() {
+            // TODO: indexof를 이용하여 다시생각해보기
+            for (var i = arrToDo.length - 1; i >= 0; i--) {
+                if (arrToDo[i] == null) {
+                    rearrange(i);
+                }
+            }
+        }
+        function rearrange(i) {
+            
+            arrToDo[i] = arrToDo[i + 1];
+            i += 1;
+            if (i < arrToDo.length) {
+                rearrange(i);
+            }
+        }
+        function saveArrToDo(){
+            for(var i = 0 ; i < arrToDo.length; i++){
+                if(arrToDo[i]==null){
+                    console.log("break");
+                    console.log(localStorage.getItem(i));
+                    console.log(arrToDo);    
+                    break;
+                }
+                localStorage.setItem(i,arrToDo[i]);
+                console.log(localStorage.getItem(i));
+            }
+        }
+        function loadArrToDo(){
+            console.log("done");
+            for(var i = 0; i<localStorage.length; i++){
+                arrToDo[i]=localStorage.getItem(i);
+            }
+        }
+        function keyDownEnter() {
+            var keyCode = event.keyCode;
+            if (keyCode == 13) {
+                generateTodo();
+            }
+        }
         function generateTodo(doneTodo) {
             var newTr = document.createElement("tr");
             var newTd = document.createElement("td");
@@ -53,7 +108,6 @@
                 index = arrToDo.length;
                 arrToDo[index] = inputValue;
                 document.getElementById("inputNewTodo").value = "";
-                // document.getElementById("inputNewTodo").setAttribute("value",null);
             } else {
                 index = doneTodo.name;
                 inputValue = arrToDo[index];
@@ -110,10 +164,9 @@
                 var x = document.getElementById("tbodyDoneTodo");
                 for (var i = 0; i < length; i++) {
                     var index = x.lastChild.getAttribute("name");
-                    console.log(arrToDo[index]);
                     delete arrToDo[index];
-                    console.log(arrToDo[index]);
                     x.lastChild.remove();
+                    delete arrToDo[i];
                 }
             }
         } 
