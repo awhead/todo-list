@@ -48,35 +48,34 @@
     <script lang="javascript">
         var arrToDo = new Array();
         loadArrToDo();
-        for(var i = 0 ; i < generateTodo.length; i++){
-            document.getElementById("inputNewTodo").value=arrToDo[i];
+        for (var i = 0; i < generateTodo.length; i++) {
+            document.getElementById("inputNewTodo").value = arrToDo[i];
             generateTodo();
         }
         function saveRearrangedTodo() {
             localStorage.clear();
-            arrToDo.filter(x=>x);
+            arrToDo.filter(x => x);
             saveArrToDo();
         }
+
+        function saveArrToDo() {
+            for (var i = 0; i < arrToDo.length; i++) {
                 if (arrToDo[i] == null) {
-                }
-            }
-        }
-        function saveArrToDo(){
-            for(var i = 0 ; i < arrToDo.length; i++){
-                if(arrToDo[i]==null){
                     console.log("break");
                     console.log(localStorage.getItem(i));
-                    console.log(arrToDo);    
+                    console.log(arrToDo);
                     break;
                 }
-                localStorage.setItem(i,arrToDo[i]);
+                localStorage.setItem(i, arrToDo[i]);
                 console.log(localStorage.getItem(i));
             }
         }
-        function loadArrToDo(){
+        function loadArrToDo() {
             console.log("done");
-            for(var i = 0; i<localStorage.length; i++){
-                arrToDo[i]=localStorage.getItem(i);
+            for (var i = 0; i < localStorage.length; i++) {
+                if (localStorage.getItem(i) != null) {
+                    arrToDo[i] = localStorage.getItem(i);
+                };
             }
         }
         function keyDownEnter() {
@@ -104,10 +103,9 @@
             var newContent = document.createTextNode(inputValue);
 
             newCheckbox.setAttribute("type", "checkbox");
-            newCheckbox.setAttribute("onclick", "moveTodo(this)");
+            newCheckbox.setAttribute("onclick", "moveToDo(this)");
 
-            newTr.setAttribute("name", index);
-            newCheckbox.setAttribute("name", index);
+            newTr.setAttribute("id", index);
 
             newTd.setAttribute("colspan", "3");
 
@@ -118,12 +116,29 @@
 
             document.getElementById("tbodyNewTodo").appendChild(newTr);
         }
-        function moveNewToDone(newCheckbox) {
+        
+        var moveToDo = function (checkbox) {
+            var index = checkbox.parentNode.parentNode.getAttribute("id");
+            var parentId = document.getElementById(index).parentNode.getAttribute("id");
+            if (parentId == "tbodyNewTodo") {
+                moveNewToDone(checkbox);
+            }
+            if (parentId == "tbodyDoneTodo") {
+                moveDoneToNew(checkbox);
+            }
+        }
+        var moveNewToDone = function (newCheckbox) {
             var index = newCheckbox.parentNode.parentNode.getAttribute("id");
-
             var doneTr = document.getElementById(index);
             document.getElementById("tbodyDoneTodo").appendChild(doneTr);
         }
+        var moveDoneToNew = function (doneCheckbox) {
+            var index = doneCheckbox.parentNode.parentNode.getAttribute("id");
+
+            var newTr = document.getElementById(index);
+            document.getElementById("tbodyNewTodo").appendChild(newTr);
+        }
+        
         function removeTodo() {
             if (document.getElementById("tbodyDoneTodo").hasChildNodes()) {
                 var length = document.getElementById("tbodyDoneTodo").children.length;
