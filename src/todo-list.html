@@ -118,32 +118,10 @@
 
             document.getElementById("tbodyNewTodo").appendChild(newTr);
         }
-        function moveTodo(newCheckbox) {
-            var index = newCheckbox.name;
+        function moveNewToDone(newCheckbox) {
+            var index = newCheckbox.parentNode.parentNode.getAttribute("id");
 
-            var doneTr = document.createElement("tr");
-            var doneTd = document.createElement("td");
-
-            var doneCheckbox = document.createElement("input");
-            var inputValue = arrToDo[index];
-            var doneContent = document.createTextNode(inputValue);
-
-            document.getElementById("tbodyNewTodo").removeChild(document.getElementsByName(index)[0]);
-            doneCheckbox.setAttribute("type", "checkbox");
-            doneCheckbox.setAttribute("onclick", "generateTodo(this)");
-
-            doneTr.setAttribute("name", index);
-            doneCheckbox.setAttribute("name", index);
-
-            doneCheckbox.setAttribute("checked", "checked");
-            doneTd.setAttribute("colspan", "3");
-            doneTd.setAttribute("class", "checked")
-
-            doneTd.appendChild(doneCheckbox);
-            doneTd.appendChild(doneContent);
-
-            doneTr.appendChild(doneTd);
-
+            var doneTr = document.getElementById(index);
             document.getElementById("tbodyDoneTodo").appendChild(doneTr);
         }
         function removeTodo() {
