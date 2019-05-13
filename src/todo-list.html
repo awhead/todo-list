@@ -54,23 +54,11 @@
         }
         function saveRearrangedTodo() {
             localStorage.clear();
-            rearrangeArrToDo()
+            arrToDo.filter(x=>x);
             saveArrToDo();
         }
-        function rearrangeArrToDo() {
-            // TODO: indexof를 이용하여 다시생각해보기
-            for (var i = arrToDo.length - 1; i >= 0; i--) {
                 if (arrToDo[i] == null) {
-                    rearrange(i);
                 }
-            }
-        }
-        function rearrange(i) {
-            
-            arrToDo[i] = arrToDo[i + 1];
-            i += 1;
-            if (i < arrToDo.length) {
-                rearrange(i);
             }
         }
         function saveArrToDo(){
