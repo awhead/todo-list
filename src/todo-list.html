@@ -47,11 +47,8 @@
     </div>
     <script lang="javascript">
         var arrToDo = new Array();
-        loadArrToDo();
-        for (var i = 0; i < generateTodo.length; i++) {
-            document.getElementById("inputNewTodo").value = arrToDo[i];
-            generateTodo();
-        }
+        window.onload = loadArrToDo();
+
         function saveRearrangedTodo() {
             localStorage.clear();
             arrToDo.filter(x => x);
@@ -60,46 +57,46 @@
 
         function saveArrToDo() {
             for (var i = 0; i < arrToDo.length; i++) {
-                if (arrToDo[i] == null) {
-                    console.log("break");
-                    console.log(localStorage.getItem(i));
-                    console.log(arrToDo);
-                    break;
-                }
                 localStorage.setItem(i, arrToDo[i]);
-                console.log(localStorage.getItem(i));
             }
         }
+
         function loadArrToDo() {
-            console.log("done");
             for (var i = 0; i < localStorage.length; i++) {
                 if (localStorage.getItem(i) != null) {
                     arrToDo[i] = localStorage.getItem(i);
+                    generateTodo(i);
                 };
             }
         }
+
         function keyDownEnter() {
             var keyCode = event.keyCode;
             if (keyCode == 13) {
                 generateTodo();
             }
         }
-        function generateTodo(doneTodo) {
+
+        function generateTodo(i) {
             var newTr = document.createElement("tr");
             var newTd = document.createElement("td");
             var newCheckbox = document.createElement("input");
             var index;
             var inputValue;
-            if (doneTodo == null) {
-                inputValue = document.getElementById("inputNewTodo").value;
-                index = arrToDo.length;
-                arrToDo[index] = inputValue;
-                document.getElementById("inputNewTodo").value = "";
-            } else {
-                index = doneTodo.name;
-                inputValue = arrToDo[index];
-                document.getElementById("tbodyDoneTodo").removeChild(document.getElementsByName(index)[0]);
+            
+            if(i==null){
+            inputValue = document.getElementById("inputNewTodo").value;
+            index = arrToDo.length;
+            arrToDo[index] = inputValue;
             }
+            if(i!=null){
+                index=i;
+                inputValue=arrToDo[i];
+            }
+
+
+            document.getElementById("inputNewTodo").value = "";
+
             var newContent = document.createTextNode(inputValue);
 
             newCheckbox.setAttribute("type", "checkbox");
@@ -137,7 +134,6 @@
         function removeTodo() {
             var tbodyDoneTodo = document.getElementById("tbodyDoneTodo");
             while (tbodyDoneTodo.lastChild.nodeName == "TR") {
-                console.log(tbodyDoneTodo.childNodes);
                 var index = tbodyDoneTodo.lastElementChild.id;
 
                 delete arrToDo[index];
