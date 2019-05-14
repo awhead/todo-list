@@ -116,10 +116,9 @@
 
             document.getElementById("tbodyNewTodo").appendChild(newTr);
         }
-        
+
         var moveToDo = function (checkbox) {
-            var index = checkbox.parentNode.parentNode.getAttribute("id");
-            var parentId = document.getElementById(index).parentNode.getAttribute("id");
+            var parentId = checkbox.parentNode.parentNode.parentNode.getAttribute("id");
             if (parentId == "tbodyNewTodo") {
                 moveNewToDone(checkbox);
             }
@@ -128,27 +127,21 @@
             }
         }
         var moveNewToDone = function (newCheckbox) {
-            var index = newCheckbox.parentNode.parentNode.getAttribute("id");
-            var doneTr = document.getElementById(index);
-            document.getElementById("tbodyDoneTodo").appendChild(doneTr);
+            document.getElementById("tbodyDoneTodo").appendChild(newCheckbox.parentNode.parentNode);
         }
         var moveDoneToNew = function (doneCheckbox) {
-            var index = doneCheckbox.parentNode.parentNode.getAttribute("id");
-
             var newTr = document.getElementById(index);
-            document.getElementById("tbodyNewTodo").appendChild(newTr);
+            document.getElementById("tbodyNewTodo").appendChild(doneCheckbox.parentNode.parentNode);
         }
-        
+
         function removeTodo() {
-            if (document.getElementById("tbodyDoneTodo").hasChildNodes()) {
-                var length = document.getElementById("tbodyDoneTodo").children.length;
-                var x = document.getElementById("tbodyDoneTodo");
-                for (var i = 0; i < length; i++) {
-                    var index = x.lastChild.getAttribute("name");
-                    delete arrToDo[index];
-                    x.lastChild.remove();
-                    delete arrToDo[i];
-                }
+            var tbodyDoneTodo = document.getElementById("tbodyDoneTodo");
+            while (tbodyDoneTodo.lastChild.nodeName == "TR") {
+                console.log(tbodyDoneTodo.childNodes);
+                var index = tbodyDoneTodo.lastElementChild.id;
+
+                delete arrToDo[index];
+                tbodyDoneTodo.lastElementChild.remove();
             }
         } 
     </script>
