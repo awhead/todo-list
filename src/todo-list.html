@@ -46,22 +46,7 @@
         </table>
     </div>
     <script lang="javascript">
-        var arrToDo = new Array();
-        window.onload = loadArrToDo();
-
-        function saveRearrangedTodo() {
-            localStorage.clear();
-            arrToDo.filter(x => x);
-            saveArrToDo();
-        }
-
-        function saveArrToDo() {
-            for (var i = 0; i < arrToDo.length; i++) {
-                localStorage.setItem(i, arrToDo[i]);
-            }
-        }
-
-        function loadArrToDo() {
+        var loadArrToDo = function () {
             for (var i = 0; i < localStorage.length; i++) {
                 if (localStorage.getItem(i) != null) {
                     arrToDo[i] = localStorage.getItem(i);
@@ -70,28 +55,21 @@
             }
         }
 
-        function keyDownEnter() {
-            var keyCode = event.keyCode;
-            if (keyCode == 13) {
-                generateTodo();
-            }
-        }
-
-        function generateTodo(i) {
+        var generateTodo = function (i) {
             var newTr = document.createElement("tr");
             var newTd = document.createElement("td");
             var newCheckbox = document.createElement("input");
             var index;
             var inputValue;
-            
-            if(i==null){
-            inputValue = document.getElementById("inputNewTodo").value;
-            index = arrToDo.length;
-            arrToDo[index] = inputValue;
+
+            if (i == null) {
+                inputValue = document.getElementById("inputNewTodo").value;
+                index = arrToDo.length;
+                arrToDo[index] = inputValue;
             }
-            if(i!=null){
-                index=i;
-                inputValue=arrToDo[i];
+            if (i != null) {
+                index = i;
+                inputValue = arrToDo[i];
             }
 
 
@@ -103,12 +81,10 @@
             newCheckbox.addEventListener("click", moveToDo);
 
             newTr.setAttribute("id", index);
-
             newTd.setAttribute("colspan", "3");
 
             newTd.appendChild(newCheckbox);
             newTd.appendChild(newContent);
-
             newTr.appendChild(newTd);
 
             document.getElementById("tbodyNewTodo").appendChild(newTr);
@@ -116,7 +92,9 @@
 
         var moveToDo = function (e) {
             var checkbox = e.currentTarget;
+            // console.log(checkbox.parentNode);
             var parentId = checkbox.parentNode.parentNode.parentNode.getAttribute("id");
+            console.log(parentId);
             if (parentId == "tbodyNewTodo") {
                 moveNewToDone(checkbox);
             }
@@ -128,11 +106,10 @@
             document.getElementById("tbodyDoneTodo").appendChild(newCheckbox.parentNode.parentNode);
         }
         var moveDoneToNew = function (doneCheckbox) {
-            var newTr = document.getElementById(index);
             document.getElementById("tbodyNewTodo").appendChild(doneCheckbox.parentNode.parentNode);
         }
 
-        function removeTodo() {
+        var removeTodo = function () {
             var tbodyDoneTodo = document.getElementById("tbodyDoneTodo");
             while (tbodyDoneTodo.lastChild.nodeName == "TR") {
                 var index = tbodyDoneTodo.lastElementChild.id;
@@ -140,7 +117,28 @@
                 delete arrToDo[index];
                 tbodyDoneTodo.lastElementChild.remove();
             }
-        } 
+        }
+
+        var saveRearrangedTodo = function () {
+            localStorage.clear();
+            arrToDo.filter(x => x);
+            saveArrToDo();
+        }
+        var saveArrToDo = function () {
+            for (var i = 0; i < arrToDo.length; i++) {
+                if (arrToDo[i] != null) {
+                    localStorage.setItem(i, arrToDo[i]);
+                }
+            }
+        }
+        var keyDownEnter = function () {
+            var keyCode = event.keyCode;
+            if (keyCode == 13) {
+                generateTodo();
+            }
+        }
+        var arrToDo = new Array();
+        window.onload = loadArrToDo();
     </script>
 </body>
 
