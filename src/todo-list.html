@@ -12,7 +12,7 @@
     <div style="text-align:center; margin:auto; width : 80%">
         <h2>TODO List</h2>
         <form style="text-align: right; margin-right:9px">
-            <input type="button" id="buttonSave" value="Save" onclick="saveRearrangedTodo()">
+            <input type="button" id="buttonSave" value="Save" onclick="saveTodo()">
         </form>
         <br>
         <table>
@@ -38,7 +38,7 @@
                     TODO: &nbsp;Done
                 </th>
                 <th class="button">
-                    <input type="button" id="buttonDoneTodo" onclick="removeTodo()" value="Clear">
+                    <input type="button" id="removeButton" value="Clear">
                 </th>
             </thead>
             <tbody id="tbodyDoneTodo">
@@ -46,55 +46,64 @@
         </table>
     </div>
     <script lang="javascript">
-        var loadArrToDo = function () {
+        var loadarrTodo = function () {
             for (var i = 0; i < localStorage.length; i++) {
-                if (localStorage.getItem(i) != null) {
-                    arrToDo[i] = localStorage.getItem(i);
-                    generateTodo(i);
-                };
+                var inputValue = localStorage.key(i);
+                if(localStorage[inputValue]=="tbodyNewTodo"){
+                    document.getElementById("tbodyNewTodo").appendChild(generateNewTodo(inputValue));
+                }                
+                if(localStorage[inputValue]=="tbodyDoneTodo"){
+                    document.getElementById("tbodyDoneTodo").appendChild(generateDoneTodo(inputValue));                    
+                }                
             }
         }
 
-        var generateTodo = function (i) {
+        var generateTodo = function (inputValue) {
+            if (inputValue == null) {
+                inputValue = document.getElementById("inputNewTodo").value;
+            }
+
+            document.getElementById("tbodyNewTodo").appendChild(generateNewTodo(inputValue));
+            document.getElementById("inputNewTodo").value = "";
+        }
+        var generateNewTodo = function(inputValue){
             var newTr = document.createElement("tr");
             var newTd = document.createElement("td");
             var newCheckbox = document.createElement("input");
-            var index;
-            var inputValue;
-
-            if (i == null) {
-                inputValue = document.getElementById("inputNewTodo").value;
-                index = arrToDo.length;
-                arrToDo[index] = inputValue;
-            }
-            if (i != null) {
-                index = i;
-                inputValue = arrToDo[i];
-            }
-
-
-            document.getElementById("inputNewTodo").value = "";
-
             var newContent = document.createTextNode(inputValue);
 
             newCheckbox.setAttribute("type", "checkbox");
-            newCheckbox.addEventListener("click", moveToDo);
+            newCheckbox.addEventListener("click", moveTodo);
 
-            newTr.setAttribute("id", index);
             newTd.setAttribute("colspan", "3");
 
             newTd.appendChild(newCheckbox);
             newTd.appendChild(newContent);
             newTr.appendChild(newTd);
+            return newTr;
+        }
+        var generateDoneTodo = function(inputValue){
+            var newTr = document.createElement("tr");
+            var newTd = document.createElement("td");
+            var newCheckbox = document.createElement("input");
+            var newContent = document.createTextNode(inputValue);
 
-            document.getElementById("tbodyNewTodo").appendChild(newTr);
+            newCheckbox.setAttribute("type", "checkbox");
+            newCheckbox.setAttribute("checked","true");
+            newCheckbox.addEventListener("click", moveTodo);
+
+            newTd.setAttribute("colspan", "3");
+
+            newTd.appendChild(newCheckbox);
+            newTd.appendChild(newContent);
+            newTr.appendChild(newTd);
+            return newTr;
         }
 
-        var moveToDo = function (e) {
+        var moveTodo = function (e) {
             var checkbox = e.currentTarget;
-            // console.log(checkbox.parentNode);
             var parentId = checkbox.parentNode.parentNode.parentNode.getAttribute("id");
-            console.log(parentId);
+
             if (parentId == "tbodyNewTodo") {
                 moveNewToDone(checkbox);
             }
@@ -109,26 +118,43 @@
             document.getElementById("tbodyNewTodo").appendChild(doneCheckbox.parentNode.parentNode);
         }
 
-        var removeTodo = function () {
+        var removeTodo = function (e) {
             var tbodyDoneTodo = document.getElementById("tbodyDoneTodo");
             while (tbodyDoneTodo.lastChild.nodeName == "TR") {
                 var index = tbodyDoneTodo.lastElementChild.id;
 
-                delete arrToDo[index];
                 tbodyDoneTodo.lastElementChild.remove();
             }
         }
 
-        var saveRearrangedTodo = function () {
+        var saveTodo = function () {
             localStorage.clear();
-            arrToDo.filter(x => x);
-            saveArrToDo();
+            // arrTodo.filter(x => x);
+            saveTbodyNewTodo();
+            saveTbodyDoneTodo();
         }
-        var saveArrToDo = function () {
-            for (var i = 0; i < arrToDo.length; i++) {
-                if (arrToDo[i] != null) {
-                    localStorage.setItem(i, arrToDo[i]);
+        var saveTbodyNewTodo = function () {
+            for (var i = 0; i < tbodyNewTodo.childElementCount; i++) {
+                var value = tbodyNewTodo.children[i].firstChild.lastChild.nodeValue;
+
+                if (value.replace(/\s/gi, '') == "") {
+                    continue;
                 }
+
+                localStorage.setItem(value, "tbodyNewTodo");
+
+            }
+        }
+        var saveTbodyDoneTodo = function () {
+            for (var i = 0; i < tbodyDoneTodo.childElementCount; i++) {
+                var value = tbodyDoneTodo.children[i].firstChild.lastChild.nodeValue;
+
+                // 공백제거 정규식적용 후 비교하여 빈값은 저장되지 않도록 함
+                if (value.replace(/\s/gi, '') == "") {
+                    continue;
+                }
+
+                localStorage.setItem(value, "tbodyDoneTodo");
             }
         }
         var keyDownEnter = function () {
@@ -137,8 +163,11 @@
                 generateTodo();
             }
         }
-        var arrToDo = new Array();
-        window.onload = loadArrToDo();
+
+        window.onload = loadarrTodo();
+        window.onload = (function () {
+            document.getElementById("removeButton").addEventListener("click", removeTodo)
+        })();
     </script>
 </body>
 
