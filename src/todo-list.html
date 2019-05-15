@@ -100,7 +100,7 @@
             var newContent = document.createTextNode(inputValue);
 
             newCheckbox.setAttribute("type", "checkbox");
-            newCheckbox.setAttribute("onclick", "moveToDo(this)");
+            newCheckbox.addEventListener("click", moveToDo);
 
             newTr.setAttribute("id", index);
 
@@ -114,7 +114,8 @@
             document.getElementById("tbodyNewTodo").appendChild(newTr);
         }
 
-        var moveToDo = function (checkbox) {
+        var moveToDo = function (e) {
+            var checkbox = e.currentTarget;
             var parentId = checkbox.parentNode.parentNode.parentNode.getAttribute("id");
             if (parentId == "tbodyNewTodo") {
                 moveNewToDone(checkbox);
