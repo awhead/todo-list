@@ -6,13 +6,15 @@
         TODO-list
     </title>
     <link rel="stylesheet" href="todo-list.css">
+    <!-- <meta http-equiv="refresh" content="45" > -->
 </head>
 
 <body>
     <div style="text-align:center; margin:auto; width : 80%">
         <h2>TODO List</h2>
         <form style="text-align: right; margin-right:9px">
-            <input type="button" id="buttonSave" value="Save" onclick="saveRearrangedTodo()">
+            <input type="button" id="buttonSave" value="Save">
+            <input type="button" id="autoSave" value="Auto Save">
         </form>
         <br>
         <table>
@@ -35,10 +37,10 @@
         <table>
             <thead>
                 <th class="text" colspan="2">
-                    TODO: &nbsp;Done
+                    TODO: &nbspDone
                 </th>
                 <th class="button">
-                    <input type="button" id="buttonDoneTodo" onclick="removeTodo()" value="Clear">
+                    <input type="button" id="buttonDoneTodo" value="Clear">
                 </th>
             </thead>
             <tbody id="tbodyDoneTodo">
@@ -46,114 +48,138 @@
         </table>
     </div>
     <script lang="javascript">
-        // 구조를 다르게 가져갈거임
-        /* arrToDo = {
-            key : {
-                content: 'text'
-                result: true||false
+        // 기본적으로 하나의 함수는 한 가지의 기능만 하기를 바람
+        // 바닐라로 가져가되 ES5문법으로 작성하는 것이 더욱이 좋다. ES5문법으로 작성하고 Babel로 트랜스파일(ES3 호환되도록 변경)을 하면 됨
+        // 새로이 추가되는 TODO리스트의 Done처리는 1개의 이벤트로 처리하는게 이벤트를 줄이는 방법 중 하나
+        
+        
+        // 저장되는 데이터의 구조는 객체를 가져가는 것이 상태관리에 용이하다.
+        // key는 유니크하게 생성할 것임 같은 내용이 여러개여도 결국 key는 다르게 가져감 ('_' + Math.random().toString(36).substr(2, 9))
+        /* const saveDataList = {
+            [key] : {
+                content: 'text' // 내용
+                done: true || false // done 여부
             }
         }*/
-        var arrToDo = {};
+        const saveDataList = {}
 
         // Load LocalStorage 
-        var loadArrToDo = function () {
-            var localData = window.localStorage.getItem('todoList')
+        const loadArrToDo = function () {
+            const localData = JSON.parse(window.localStorage.getItem('todoList'))
 
             if(localData){
-                arrToDo = JSON.parse(localData)
-                var arrKeys =  Object.keys(arrToDo)
+                const arrKeys =  Object.keys(localData)
+
                 for (let index = 0; index < arrKeys.length; index++) {
-                    const element = arrToDo[arrKeys[index]];
-                    generateTodo(element);    
+                    const key = arrKeys[index];
+                    const content = localData[key].content
+                    const done = localData[key].done
+
+                    createTodo(key, content, done ? "tbodyDoneTodo" : "tbodyNewTodo")    
                 }
-                
             }
         }
 
-        var keyDownEnter = function (e) {
-            e.keyCode === 13 && handleAddList(e.target)
+        // Integrated Key Down Event 
+        const handleKeyDown = function (e) {
+            e.keyCode === 13 && handleTextInput(e.target)
         }
 
-        var handleAddList = function(target){
-            generateTodo(target.value)
+        // AddList 기능 추가
+        const handleTextInput = function(target){
+            if(!target.value){
+                alert('내용을 입력해주세요!!!')
+                return
+            }
+
+            const newKey = '_' + Math.random().toString(36).substr(2, 9)
+
+            createTodo(newKey, target.value, "tbodyNewTodo")
             target.value = ''
         }
 
-        // 일단은 한줄 만드는 로직으로 만듬 
-        // 하나의  Functon에서 다 해결하려는 것은 좋지 못함
-        // 인자는 index를 넘기는 건 좋지 못함
-        var generateTodo = function (newValue) {
-            var newTr = document.createElement("tr");
-            var newTd = document.createElement("td");
-            var newCheckbox = document.createElement("input");
-            var newContent = document.createTextNode(newValue);
+        // Create New Todo List
+        const createTodo = function (newKey, newValue, location) {
+            const newTr = document.createElement("tr")
+            const newTd = document.createElement("td")
+            const newCheckbox = document.createElement("input")
+            const newContent = document.createTextNode(newValue)
+            const targetTbody =  document.getElementById(location)
 
-            newCheckbox.setAttribute("type", "checkbox");
-            newCheckbox.addEventListener("click", moveToDo);
+            newCheckbox.setAttribute("type", "checkbox")
+            newCheckbox.setAttribute("class", "todoCheckbox")
+            location === "tbodyDoneTodo" &&  newCheckbox.setAttribute("checked", true)
+           
+            newCheckbox.addEventListener("click", moveToDo)
 
-            newTr.setAttribute("id", Object.keys(arrToDo).length + '_' + newValue);
-            newTd.setAttribute("colspan", "3");
+            newTr.setAttribute("id", newKey)
+            newTd.setAttribute("colspan", "3")
 
-            newTd.appendChild(newCheckbox);
-            newTd.appendChild(newContent);
-            newTr.appendChild(newTd);
+            // Append List
+            newTd.appendChild(newCheckbox)
+            newTd.appendChild(newContent)
+            newTr.appendChild(newTd)
 
-            arrToDo[Object.keys(arrToDo).length + '_' + newValue] = newValue
+            targetTbody.appendChild(newTr)
 
-            document.getElementById("tbodyNewTodo").appendChild(newTr);
-
-            // 다른 용도 인듯 함
-            // if (i != null) {
-            //     index = i;
-            //     inputValue = arrToDo[i];
-            // }
+            // Sync Data
+            saveDataList[newKey] = {
+                content: newValue,
+                done: location === "tbodyDoneTodo" ? true : false 
+            }
         }
 
-        var moveToDo = function (e) {
-            var todoList = ['tbodyNewTodo', 'tbodyDoneTodo']
-            var checkbox = e.target;
-            var parentId = checkbox.parentNode.parentNode.parentNode.getAttribute("id");
-            var targetId = todoList[Math.abs(todoList.indexOf(parentId)-1)]
+        // Move to Other side
+        const moveToDo = function (e) {
+            const target = e.target
+            const targetLine = target.parentNode.parentNode
+            const targetId = targetLine.getAttribute('id')
+            const doneCheck = saveDataList[targetId].done
+            const moveToTarget = doneCheck ? 'tbodyNewTodo' : 'tbodyDoneTodo'
 
-            document.getElementById(targetId).appendChild(checkbox.parentNode.parentNode);
+            // Change DataList
+            saveDataList[targetId].done = !saveDataList[targetId].done
+
+            // target.checked = false
+            document.getElementById(moveToTarget).appendChild(targetLine)
         }
 
-        //위에서 하나도 퉁
-        var moveNewToDone = function (newCheckbox) {
-            document.getElementById("tbodyDoneTodo").appendChild(newCheckbox.parentNode.parentNode);
-        }
-        //위에서 하나도 퉁
-        var moveDoneToNew = function (doneCheckbox) {
-            document.getElementById("tbodyNewTodo").appendChild(doneCheckbox.parentNode.parentNode);
-        }
-
-        var removeTodo = function () {
-            var tbodyDoneTodo = document.getElementById("tbodyDoneTodo");
-            var children = tbodyDoneTodo.children
+        const removeAllDone = function () {
+            const tbodyDoneTodo = document.getElementById("tbodyDoneTodo")
+            const children = tbodyDoneTodo.children
 
             while (children.length > 0) {
-                delete arrToDo[children[children.length-1].getAttribute('id')]
-                children[children.length-1].remove();
+                delete saveDataList[children[children.length-1].getAttribute('id')]
+                tbodyDoneTodo.removeChild(children[children.length-1])
             }
         }
 
-        var saveRearrangedTodo = function () {
-            // window.localStorage.removeItem('todoList')
-            window.localStorage.setItem('todoList', JSON.stringify(arrToDo))
+        const saveRearrangedTodo = function () {
+            console.log('SAVE!!!')
+            window.localStorage.setItem('todoList', JSON.stringify(saveDataList))
         }
 
-        //필요없어 보임
-        var saveArrToDo = function () {
-            for (var i = 0; i < arrToDo.length; i++) {
-                if (arrToDo[i] != null) {
-                    localStorage.setItem(i, arrToDo[i]);
-                }
+        const saveTime = 2 // Default 10초
+        let autoSaveTimer // Timer
+
+        const handleAutoSave = function(){
+            if(autoSaveTimer){
+                window.clearInterval(autoSaveTimer)
+                autoSaveTimer = null
+            }else{
+                autoSaveTimer = window.setInterval(function() {
+                    saveRearrangedTodo()
+                }, 1000 * saveTime)
             }
         }
-       
-        window.onload = loadArrToDo();
-        document.getElementById("inputNewTodo").addEventListener('keydown', keyDownEnter)
-        document.getElementById("buttonNewTodo").addEventListener('click', function(){ handleAddList(document.getElementById('inputNewTodo'))})
+
+        // Window.onload도 좋은 시점이지만 그냥 바로 실행도 가능 이미 화면이 그려졌다는 전제하에
+        loadArrToDo()
+        document.getElementById("inputNewTodo").addEventListener('keydown', handleKeyDown)
+        document.getElementById("buttonNewTodo").addEventListener('click', function(){ handleTextInput(document.getElementById('inputNewTodo'))})
+        document.getElementById("buttonDoneTodo").addEventListener('click', removeAllDone)
+        document.getElementById("buttonSave").addEventListener('click', saveRearrangedTodo)
+        document.getElementById("autoSave").addEventListener('click', handleAutoSave)
     </script>
 </body>
 
